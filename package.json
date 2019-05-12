@@ -1,0 +1,40 @@
+{
+  "name": "powerbi-report-authoring",
+  "version": "1.0.0",
+  "description": "A library for authoring Power BI reports while embedded into your apps. Provides service which makes it easy to change report and visual elements in session. It gives APIs such as creating visual, changing visual properties, etc ...",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Microsoft",
+    "PowerBI",
+    "Embedded",
+    "Visuals"
+  ],
+  "author": "Microsoft",
+  "license": "MIT",
+  "devDependencies": {
+    "del": "^2.2.1",
+    "gulp": "^4.0.2",
+    "gulp-flatten": "^0.4.0",
+    "gulp-header": "^2.0.7",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "run-sequence": "^2.2.1",
+    "ts-loader": "^6.0.0",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5",
+    "uglify-save-license": "^0.4.1",
+    "webpack": "^4.30.0",
+    "webpack-stream": "^5.2.1"
+  },
+  "dependencies": {
+    "gulp-typescript": "^5.0.1",
+    "http-post-message": "^0.2.3",
+    "powerbi-client": "^2.7.3",
+    "powerbi-models": "file:../powerbi-models",
+    "readable-stream": "^3.0.2"
+  },
+  "typings": "dist/powerbi-report-authoring.d.ts"
+}
