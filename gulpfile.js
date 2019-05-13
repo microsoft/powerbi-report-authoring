@@ -16,7 +16,7 @@ var del = require('del'),
 
 // Build the license comment.
 var package = require('./package.json');
-var webpackBanner = package.name + " v" + package.version + " | (c) 2016 Microsoft Corporation " + package.license;
+var webpackBanner = package.name + " v" + package.version + " | (c) 2019 Microsoft Corporation " + package.license;
 var gulpBanner = "/*! " + webpackBanner + " */\n";
 
 gulp.task("compile:ts", function () {
