@@ -31,9 +31,9 @@
   },
   "dependencies": {
     "gulp-typescript": "^5.0.1",
-    "http-post-message": "^0.2.3",
-    "powerbi-client": "^2.7.3",
-    "powerbi-models": "^1.1.0",
+    "http-post-message": "^0.2",
+    "powerbi-client": "^2.7",
+    "powerbi-models": "^1.1",
     "readable-stream": "^3.0.2"
   },
   "typings": "dist/powerbi-report-authoring.d.ts"

@@ -6,9 +6,16 @@ import {
     IVisualLayout,
     IVisual
 } from 'powerbi-models';
+
 import { IVisualResponse } from './models';
+import { Errors } from './errors';
 
 export function startPageAuthoring(): void {
+    if (Page == null) {
+        console.error(Errors.PowerBIClientIsNotInitialized);
+        return;
+    }
+
     Page.prototype.createVisual = function (this: Page, visualType: string, layout?: IVisualLayout): Promise<IVisualResponse> {
         return PageOperations.create(this).createVisual(visualType, layout);
     }

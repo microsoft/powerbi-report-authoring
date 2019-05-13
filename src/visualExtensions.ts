@@ -10,8 +10,14 @@ import {
 } from 'powerbi-models';
 
 import { config } from './config';
+import { Errors } from './errors';
 
 export function startVisualAuthoring(): void {
+    if (VisualDescriptor == null) {
+        console.error(Errors.PowerBIClientIsNotInitialized);
+        return;
+    }
+
     VisualDescriptor.prototype.changeType = function (this: VisualDescriptor, visualType: string): Promise<void> {
         return VisualOperations.create(this).changeType(visualType);
     };
