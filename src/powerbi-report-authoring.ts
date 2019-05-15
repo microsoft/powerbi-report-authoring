@@ -7,13 +7,12 @@ import {
     IVisualLayout,
 } from 'powerbi-models';
 
-import { startPageAuthoring } from './pageExtensions';
-import { startVisualAuthoring } from './visualExtensions';
 import { IVisualResponse } from './models';
+import { extensions } from './extensions';
 
 // Extend Page object
 declare module 'powerbi-client' {
-    export interface IPageNode {
+    export class Page {
         /**
          * Creates an empty visual of a specific type.
          *
@@ -25,114 +24,97 @@ declare module 'powerbi-client' {
          *
          * @returns {ICreateVisualResponse}
          */
-        createVisual(visualType: string, layout?: IVisualLayout): Promise<IVisualResponse>;
+        createVisual(this: Page, visualType: string, layout?: IVisualLayout): Promise<IVisualResponse>;
 
         /**
         * Deletes a visual by a visual name.
         *
         * @param visualName – The name of the visual to delete.
         */
-        deleteVisual(visualName: string): Promise<void>;
-    }
-
-    export class Page implements IPageNode {
-        createVisual(this: Page, visualType: string, layout?: IVisualLayout): Promise<IVisualResponse>;
         deleteVisual(this: Page, visualName: string): Promise<void>;
     }
 }
 
 // Extend Visual object
 declare module 'powerbi-client' {
-    export interface IVisualNode {
+    export class VisualDescriptor {
         /**
         * Changes the visual type of an existing visual.
         *
         * @param visualType – a new visual type.
         */
-        changeType(visualType: string): Promise<void>;
+       changeType(visualType: string): Promise<void>;
 
-        /**
-        * Get the visual's type capabilities
-        *
-        * @returns {(Promise<IVisualCapabilities>)}
-        */
-        getCapabilities(): Promise<IVisualCapabilities>;
+       /**
+       * Get the visual's type capabilities
+       *
+       * @returns {(Promise<IVisualCapabilities>)}
+       */
+       getCapabilities(): Promise<IVisualCapabilities>;
 
-        /**
-        * Adds a field to a data role.
-        * @param dataRole - the name of the target data role.
-        * @param dataField - the field to add to the data role. The field can be a column, column with aggregation, measure, hierarchy, or hierarchy with aggregation.
-        */
-        addDataField(dataRole: string, dataField: IBaseTarget): Promise<IError>;
+       /**
+       * Adds a field to a data role.
+       * @param dataRole - the name of the target data role.
+       * @param dataField - the field to add to the data role. The field can be a column, column with aggregation, measure, hierarchy, or hierarchy with aggregation.
+       */
+       addDataField(dataRole: string, dataField: IBaseTarget): Promise<IError>;
 
-        /**
-        * Gets a list of fields defined in a data role.
-        * @param dataRole - a name of a data role.
-        * @returns a list of the data role fields.
-        */
-        getDataFields(dataRole: string): Promise<IBaseTarget>;
+       /**
+       * Gets a list of fields defined in a data role.
+       * @param dataRole - a name of a data role.
+       * @returns a list of the data role fields.
+       */
+       getDataFields(dataRole: string): Promise<IBaseTarget[]>;
 
-        /**
-        * removes a data role field.
-        * @param dataRole - the name of the target data role.
-        * @param index - the index of the enrty to delete.
-        */
-        removeDataField(dataRole: string, index: number): Promise<IError>;
+       /**
+       * removes a data role field.
+       * @param dataRole - the name of the target data role.
+       * @param index - the index of the enrty to delete.
+       */
+       removeDataField(dataRole: string, index: number): Promise<IError>;
 
-        /**
-        * Get a visual property value.
-        *
-        * @param selector: a selector for the property.
-        * ```javascript
-        * visual.getProperty(selector)
-        *  .then(value => { ... });
-        * ```
-        *
-        * @returns {(Promise<IVisualPropertyValue>)}
-        */
-        getProperty(selector: IVisualPropertySelector): Promise<IVisualPropertyValue>;
+       /**
+       * Get a visual property value.
+       *
+       * @param selector: a selector for the property.
+       * ```javascript
+       * visual.getProperty(selector)
+       *  .then(value => { ... });
+       * ```
+       *
+       * @returns {(Promise<IVisualPropertyValue>)}
+       */
+       getProperty(selector: IVisualPropertySelector): Promise<IVisualPropertyValue>;
 
-        /**
-        * Set a visual property value.
-        *
-        * @param selector: a selector for the property.
-        * @param value: a value to set.
-        * ```javascript
-        * visual.setProperty(selector)
-        *  .then(() => { ... });
-        * ```
-        */
-        setProperty(selector: IVisualPropertySelector, value: IVisualPropertyValue): Promise<void>;
+       /**
+       * Set a visual property value.
+       *
+       * @param selector: a selector for the property.
+       * @param value: a value to set.
+       * ```javascript
+       * visual.setProperty(selector)
+       *  .then(() => { ... });
+       * ```
+       */
+       setProperty(selector: IVisualPropertySelector, value: IVisualPropertyValue): Promise<void>;
 
-        /**
-        * Reset property value to default value.
-        *
-        * @param selector: a selector for the property.
-        * ```javascript
-        * visual.resetProperty(selector)
-        *  .then(() => { ... });
-        * ```
-        */
-        resetProperty(selector: IVisualPropertySelector): Promise<void>;
-    }
-
-    export class VisualDescriptor implements IVisualNode {
-        changeType(visualType: string): Promise<void>;
-        getCapabilities(): Promise<IVisualCapabilities>;
-
-        addDataField(dataRole: string, dataField: IBaseTarget): Promise<IError>;
-        getDataFields(dataRole: string): Promise<IBaseTarget>;
-        removeDataField(dataRole: string, index: number): Promise<IError>;
-
-        getProperty(selector: IVisualPropertySelector): Promise<IVisualPropertyValue>;
-        setProperty(selector: IVisualPropertySelector, value: IVisualPropertyValue): Promise<void>;
-        resetProperty(selector: IVisualPropertySelector): Promise<void>;
+       /**
+       * Reset property value to default value.
+       *
+       * @param selector: a selector for the property.
+       * ```javascript
+       * visual.resetProperty(selector)
+       *  .then(() => { ... });
+       * ```
+       */
+       resetProperty(selector: IVisualPropertySelector): Promise<void>;
     }
 }
 
 export function startAuthoring(): void {
-    startPageAuthoring();
-    startVisualAuthoring();
+    extensions.forEach(extension => {
+        extension.initialize();
+    });
 }
 
 startAuthoring();
