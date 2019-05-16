@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "target": "es5",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "noImplicitUseStrict": true,
+    "outDir": "dist",
+    "pretty": true
+  },
+  "exclude": [
+    "node_modules",
+    "typings/powerbi-report-authoring",
+    "typings/powerbi-report-authoring.d.ts",
+    "typings/browser",
+    "typings/browser.d.ts",
+    "typings/index.d.ts",
+    "dist",
+    "test",
+    "tmp",
+    ".publish"
+  ]
+}
