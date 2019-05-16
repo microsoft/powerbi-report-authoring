@@ -54,6 +54,7 @@ declare module 'powerbi-client' {
 
        /**
        * Adds a field to a data role.
+       *
        * @param dataRole - the name of the target data role.
        * @param dataField - the field to add to the data role. The field can be a column, column with aggregation, measure, hierarchy, or hierarchy with aggregation.
        */
@@ -61,13 +62,15 @@ declare module 'powerbi-client' {
 
        /**
        * Gets a list of fields defined in a data role.
+       *
        * @param dataRole - a name of a data role.
        * @returns a list of the data role fields.
        */
        getDataFields(dataRole: string): Promise<IBaseTarget[]>;
 
        /**
-       * removes a data role field.
+       * Removes a data role field.
+       *
        * @param dataRole - the name of the target data role.
        * @param index - the index of the enrty to delete.
        */
