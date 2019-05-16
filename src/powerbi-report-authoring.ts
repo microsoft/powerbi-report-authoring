@@ -10,9 +10,17 @@ import {
 import { extensions } from './extensions';
 import { IVisualResponse } from './models';
 
+/*
+ * Class Augmentation/Extension Notes:
+ *   - No need for export: All declarations are implicitly exported in an ambient context
+ *   - Class Augmentation works through interfaces in typescript.
+ */
+
 // Extend Report object
 declare module 'powerbi-client' {
-    export class Report {
+
+    // See "Class Augmentation/Extension Notes" above.
+    interface Report {
         /**
          * Get a visual type capabilities
          *
@@ -32,7 +40,8 @@ declare module 'powerbi-client' {
 
 // Extend Page object
 declare module 'powerbi-client' {
-    export class Page {
+    // See "Class Augmentation/Extension Notes" above.
+    interface Page {
         /**
          * Creates an empty visual of a specific type.
          *
@@ -57,7 +66,8 @@ declare module 'powerbi-client' {
 
 // Extend Visual object
 declare module 'powerbi-client' {
-    export class VisualDescriptor {
+    // See "Class Augmentation/Extension Notes" above.
+    interface VisualDescriptor {
         /**
          * Changes the visual type of an existing visual.
          *
