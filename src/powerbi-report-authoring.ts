@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.// Licensed under the MIT license.
+
 /*
  * Important note for module augmentation:
  * Importing powerbi-client for module augmentation.
