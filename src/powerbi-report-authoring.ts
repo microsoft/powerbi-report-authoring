@@ -1,3 +1,13 @@
+// Copyright (c) Microsoft Corporation.// Licensed under the MIT license.
+
+/*
+ * Important note for module augmentation:
+ * Importing powerbi-client for module augmentation.
+ * Don't remove it in spite of not using pbi in the file.
+ * In addition, do not change to import needed classes by name.
+ */
+import * as pbi from 'powerbi-client';
+
 import {
     IBaseTarget,
     IError,
@@ -12,8 +22,9 @@ import { IVisualResponse } from './models';
 
 /*
  * Class Augmentation/Extension Notes:
- *   - No need for export: All declarations are implicitly exported in an ambient context
- *   - Class Augmentation works through interfaces in typescript.
+ *   - No need for export: all declarations are implicitly exported in an ambient context (inside declare)
+ *   - Class augmentation of instance methods works through interface declaration merge.
+ *   - Class augmentation of static methods works through namespace declaration merge.
  */
 
 // Extend Report object

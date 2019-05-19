@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation.// Licensed under the MIT license.
+
 import { HttpPostMessage } from 'http-post-message';
 import { VisualDescriptor } from 'powerbi-client';
 import {
