@@ -28,7 +28,7 @@ import { IVisualResponse } from './models';
  */
 
 /*
- * Augment 'reprot' module from 'powerbi-client'. Augmenting Report class from 'powerbi-client' directly is not possible.
+ * Augment 'report' module from 'powerbi-client'. Augmenting Report class from 'powerbi-client' directly is not possible.
  * This is due to an open issue in typescript: Re-exported classes cannot be augmented. A workaround is to augment the class from the internal module.
  * @see <a href="https://github.com/Microsoft/TypeScript/issues/12607">open issue</a>
  */
