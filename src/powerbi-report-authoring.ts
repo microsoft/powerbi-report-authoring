@@ -27,8 +27,12 @@ import { IVisualResponse } from './models';
  *   - Class augmentation of static methods works through namespace declaration merge.
  */
 
-// Extend Report object
-declare module 'powerbi-client' {
+/*
+ * Augment 'report' module from 'powerbi-client'. Augmenting Report class from 'powerbi-client' directly is not possible.
+ * This is due to an open issue in typescript: Re-exported classes cannot be augmented. A workaround is to augment the class from the internal module.
+ * @see <a href="https://github.com/Microsoft/TypeScript/issues/12607">open issue</a>
+ */
+declare module 'report' {
 
     // See "Class Augmentation/Extension Notes" above.
     interface Report {
@@ -49,8 +53,11 @@ declare module 'powerbi-client' {
     }
 }
 
-// Extend Page object
-declare module 'powerbi-client' {
+/*
+ * Extending Page object of 'page' module declared in 'powerbi-client' library.
+ * @see comments about declare module 'report'.
+ */
+declare module 'page' {
     // See "Class Augmentation/Extension Notes" above.
     interface Page {
         /**
@@ -75,8 +82,11 @@ declare module 'powerbi-client' {
     }
 }
 
-// Extend Visual object
-declare module 'powerbi-client' {
+/*
+ * Extending VisualDescriptor object of 'visualDescriptor' module declared in 'powerbi-client' library.
+ * @see comments about declare module 'report'.
+ */
+declare module 'visualDescriptor' {
     // See "Class Augmentation/Extension Notes" above.
     interface VisualDescriptor {
         /**
