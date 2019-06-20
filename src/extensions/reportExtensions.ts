@@ -45,7 +45,7 @@ export class ReportExtensions implements IPowerBIClientExtension {
         }
 
         Report.prototype.getVisualCapabilities = function(this: Report, visualType: string): Promise<IVisualCapabilities> {
-            if(!visualType)
+            if (!visualType)
             {
                 const error: IError = { message: "visualType parameter is missing" };
                 throw error;
