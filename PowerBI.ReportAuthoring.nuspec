@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Microsoft.PowerBI.ReportAuthoring</id>
+    <version>$version$</version>
+    <authors>Microsoft</authors>
+    <owners>microsoft,powerbi</owners>
+    <licenseUrl>https://raw.githubusercontent.com/Microsoft/dotnet/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Microsoft/PowerBI-Report-Authoring</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkId=780675</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>A library for authoring Power BI reports</summary>
+    <description>A library for authoring Power BI reports while embedded into your apps. Provides service which makes it easy to change report and visual elements in session. It gives APIs such as creating visual, changing visual properties, etc ...</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>Microsoft Power BI JavaScript JS</tags>
+  </metadata>
+  <files>
+    <file src="dist\powerbi-report-authoring.js" target="content\scripts" />
+    <file src="dist\powerbi-report-authoring.min.js" target="content\scripts" />
+  </files>
+</package>
