@@ -4,6 +4,13 @@
 This library is an extension of powerbi-client library.
 While powerbi-client library helps for embedding Power BI reports into your apps, powerbi-report-authoring helps for editing Power BI reports programatically.
 
+[![NPM Version](https://img.shields.io/npm/v/powerbi-report-authoring.svg)](https://www.npmjs.com/package/powerbi-report-authoring/)
+[![Nuget Version](https://img.shields.io/nuget/v/Microsoft.PowerBI.ReportAuthoring.svg)](https://www.nuget.org/packages/Microsoft.PowerBI.ReportAuthoring/)
+[![NPM Total Downloads](https://img.shields.io/npm/dt/powerbi-report-authoring.svg)](https://www.npmjs.com/package/powerbi-Report-Authoring)
+[![NPM Monthly Downloads](https://img.shields.io/npm/dm/powerbi-report-authoring.svg)](https://www.npmjs.com/package/powerbi-Report-Authoring)
+[![GitHub tag](https://img.shields.io/github/tag/microsoft/powerbi-report-authoring.svg)](https://github.com/Microsoft/powerbi-report-authoring/tags)
+[![Gitter](https://img.shields.io/gitter/room/Microsoft/powerbi-report-authoring.svg)](https://gitter.im/Microsoft/powerbi-report-authoring)
+
 ## Wiki
 See [powerbi-client wiki](https://github.com/Microsoft/PowerBI-JavaScript/wiki) for more details about embedding Power BI reports.
 
