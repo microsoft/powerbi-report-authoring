@@ -46,7 +46,7 @@ export class PageExtensions implements IPowerBIClientExtension {
             return;
         }
 
-        Page.prototype.createVisual = function(this: Page, visualType: string, layout?: IVisualLayout, autoFocus?: Boolean): Promise<IVisualResponse> {
+        Page.prototype.createVisual = function(this: Page, visualType: string, layout?: IVisualLayout, autoFocus?: boolean): Promise<IVisualResponse> {
             const createVisualRequest: ICreateVisualRequest = { visualType, layout, autoFocus};
             return PageExtensions.post<ICreateVisualResponse>(this, `/report/pages/${this.name}/createVisual`, createVisualRequest)
                 .then((responseBody) => {
