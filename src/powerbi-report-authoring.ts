@@ -68,7 +68,7 @@ declare module 'page' {
          *
          * @param visualType - The type of the visual to create.
          * @param layout – Optional. The layout which will be applied to the new visual. Default: a best effort to put a new visual in an empty space on the canvas.
-         * @param autoFocus – Optional. Whether or not the page should focus on the newly created visual.
+         * @param autoFocus – Optional. Focus on the new visual after its creation.
          *
          * @returns {ICreateVisualResponse}
          */
