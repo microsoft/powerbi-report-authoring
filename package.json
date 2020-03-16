@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "http-post-message": "^0.2",
-    "powerbi-client": "^2.7",
+    "powerbi-client": "^2.10",
     "powerbi-models": "^1.3"
   },
   "typings": "dist/powerbi-report-authoring.d.ts"
