@@ -3,6 +3,7 @@
 import { HttpPostMessage } from 'http-post-message';
 import { Report } from 'powerbi-client';
 import {
+    IError,
     IVisualCapabilities
 } from 'powerbi-models';
 
@@ -44,6 +45,12 @@ export class ReportExtensions implements IPowerBIClientExtension {
         }
 
         Report.prototype.getVisualCapabilities = function(this: Report, visualType: string): Promise<IVisualCapabilities> {
+            if (!visualType)
+            {
+                const error: IError = { message: "visualType parameter is missing" };
+                throw error;
+            }
+
             return ReportExtensions.get<IVisualCapabilities>(this, `/report/visuals/types/${visualType}/capabilities`);
         };
 
