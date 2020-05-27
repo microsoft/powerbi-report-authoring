@@ -109,8 +109,9 @@ declare module 'visualDescriptor' {
         *
         * @param dataRole - the name of the target data role.
         * @param dataField - the field to add to the data role. The field can be a column, column with aggregation, measure, hierarchy, or hierarchy with aggregation.
+        * @param index - Optional. The index at which data field should be added. Default: the field is added last.
         */
-       addDataField(dataRole: string, dataField: IBaseTarget): Promise<IError>;
+       addDataField(dataRole: string, dataField: IBaseTarget, index?: number): Promise<IError>;
 
        /**
         * Gets a list of fields defined in a data role.
@@ -124,7 +125,7 @@ declare module 'visualDescriptor' {
         * Removes a data role field.
         *
         * @param dataRole - the name of the target data role.
-        * @param index - the index of the enrty to delete.
+        * @param index - the index at which data field should be deleted.
         */
        removeDataField(dataRole: string, index: number): Promise<IError>;
 
