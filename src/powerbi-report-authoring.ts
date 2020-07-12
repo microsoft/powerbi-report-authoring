@@ -105,6 +105,23 @@ declare module 'visualDescriptor' {
        getCapabilities(): Promise<IVisualCapabilities>;
 
        /**
+        * Gets the display name of a data role field.
+        *
+        * @param dataRole - the name of the target data role.
+        * @param index - the data field index.
+        */
+       getDataFieldDisplayName(dataRole: string, index: number): Promise<string>;
+
+       /**
+        * Sets the display name of a data role field.
+        *
+        * @param dataRole - the name of the target data role.
+        * @param index - the index at which data field should be renamed.
+        * @param newDisplayName - the new display name for the data role field.
+        */
+       setDataFieldDisplayName(dataRole: string, index: number, newDisplayName: string): Promise<IError>;
+
+       /**
         * Adds a field to a data role.
         *
         * @param dataRole - the name of the target data role.
