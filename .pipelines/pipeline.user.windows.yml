@@ -1,12 +1,12 @@
 environment:
   host:
-    os: 'windows'
-    flavor: 'server'
-    version: '2016'
+    os: "windows"
+    flavor: "server"
+    version: "2016"
   runtime:
-    provider: 'appcontainer'
-    image: 'cdpxwinrs5.azurecr.io/global/vse2019/16.3.7:latest'
-    source_mode: 'map'
+    provider: "appcontainer"
+    image: "cdpxwinrs5.azurecr.io/global/vse2019/16.3.7:latest"
+    source_mode: "map"
 
 artifact_publish_options:
   publish_to_legacy_artifacts: false
@@ -14,24 +14,25 @@ artifact_publish_options:
   publish_to_cloudvault_artifacts: false
 
 signing_options:
-  profile: 'external_distribution'
+  profile: "external_distribution"
+  codesign_validation_glob_pattern: 'regex|.+(?:exe|dll)$;-|*.nd.dll;-|.gdn\\**'
 
 static_analysis_options:
   moderncop_options:
     files_to_scan:
       - from: 'src\'
         include:
-          - '**/*.*'
+          - "**/*.*"
 
   policheck_options:
     files_to_scan:
       - exclude:
-        - 'node_modules\**\*'
+          - 'node_modules\**\*'
 
   binskim_options:
     files_to_scan:
       - exclude:
-        - 'node_modules\**\*'
+          - 'node_modules\**\*'
 
 package_sources:
   npm:
@@ -39,64 +40,70 @@ package_sources:
       registry: https://powerbi.pkgs.visualstudio.com/_packaging/SDK.Externals/npm/registry/
 
 version:
-  major: 1          # <---- Required field but not being used for 'custom' scheme
-  minor: 0          # <---- Required field but not being used for 'custom' scheme
-  system: 'custom'  # <---- Set this to 'custom'. we will build the version using package.json in versioning commands.
+  major: 1 # <---- Required field but not being used for 'custom' scheme
+  minor: 0 # <---- Required field but not being used for 'custom' scheme
+  system: "custom" # <---- Set this to 'custom'. we will build the version using package.json in versioning commands.
 
 versioning:
   commands:
     - !!defaultcommand
-      name: 'Set Version'
-      arguments: 'version.ps1'
+      name: "Set Version"
+      arguments: "version.ps1"
       command: '.pipelines\cdpx_run_ps.cmd'
 
 restore:
   commands:
     - !!defaultcommand
-      name: 'NPM Install'
-      arguments: 'restore.ps1'
+      name: "NPM Install"
+      arguments: "restore.ps1"
       command: '.pipelines\cdpx_run_ps.cmd'
 
 build:
   commands:
     - !!buildcommand
-      name: 'Build'
-      arguments: 'build.ps1'
+      name: "Build"
+      arguments: "build.ps1"
       command: '.pipelines\cdpx_run_ps.cmd'
       artifacts:
-        - from: 'dist'
-          to: 'build_artifacts'
+        - to: "build_artifacts"
           include:
-            - '**/*'
-          exclude:
-            - '**/node_modules/**/*.*'
+            - "dist/**/*"
+            - "LICENSE.txt"
+            - "package.json"
+            - "README.md"
 
+# All build stage artifacts get signed right after the build stage
+# because the global signing profile is defined.
+
+package:
+  commands:
     - !!buildcommand
-      name: 'Package'
-      arguments: 'package.ps1'
+      name: "Package"
+      arguments: "package.ps1"
       command: '.pipelines\cdpx_run_ps.cmd'
       artifacts:
-        - include:
+        - to: "tgz-package"
+          include:
             - "**/*.tgz"
 
     - !!buildcommand
-      name: 'Nuget Pack'
-      arguments: 'nuget_pack.ps1'
+      name: "Nuget Pack"
+      arguments: "nuget_pack.ps1"
       command: '.pipelines\cdpx_run_ps.cmd'
       artifacts:
-        - to: 'Release'
+        - to: "Release"
           include:
-            - "**/*.nupkg"
+            - "**/Microsoft.PowerBI.ReportAuthoring.*.nupkg"
 
 test:
   commands:
     - !!testcommand
-      name: 'Test powerbi-report-authoring'
-      arguments: 'test.ps1'
+      name: "Test powerbi-report-authoring"
+      arguments: "test.ps1"
       command: '.pipelines\cdpx_run_ps.cmd'
       testresults:
-        - title: 'powerbi-report-authoring test results'
-          type: 'jasmine'
-          from: 'reports'
+        - title: "powerbi-report-authoring test results"
+          type: "jasmine"
+          from: "reports"
           include:
             - "**coverage/**/index.html"
