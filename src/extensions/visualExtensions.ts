@@ -82,8 +82,16 @@ export class VisualExtensions implements IPowerBIClientExtension {
             return VisualExtensions.get<IVisualCapabilities>(this, `/report/visuals/types/${this.type}/capabilities`);
         };
 
-        VisualDescriptor.prototype.addDataField = function(this: VisualDescriptor, dataRole: string, dataField: IBaseTarget): Promise<IError> {
-            return VisualExtensions.post<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields`, dataField);
+        VisualDescriptor.prototype.getDataFieldDisplayName = function(this: VisualDescriptor, dataRole: string, index: number): Promise<string> {
+            return VisualExtensions.get<string>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/displayName`);
+        };
+
+        VisualDescriptor.prototype.setDataFieldDisplayName = function(this: VisualDescriptor, dataRole: string, index: number, newDisplayName: string): Promise<IError> {
+            return VisualExtensions.put<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/displayName`, { newDisplayName });
+        };
+
+        VisualDescriptor.prototype.addDataField = function(this: VisualDescriptor, dataRole: string, dataField: IBaseTarget, index?: number): Promise<IError> {
+            return VisualExtensions.post<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}`, dataField);
         };
 
         VisualDescriptor.prototype.getDataFields = function(this: VisualDescriptor, dataRole: string): Promise<IBaseTarget[]> {
