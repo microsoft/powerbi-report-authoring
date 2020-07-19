@@ -1,6 +1,5 @@
-
-
 # powerbi-report-authoring
+
 This library is an extension of powerbi-client library.
 While powerbi-client library helps for embedding Power BI reports into your apps, powerbi-report-authoring helps for editing Power BI reports programatically.
 
@@ -12,25 +11,26 @@ While powerbi-client library helps for embedding Power BI reports into your apps
 [![Gitter](https://img.shields.io/gitter/room/Microsoft/powerbi-report-authoring.svg)](https://gitter.im/Microsoft/powerbi-report-authoring)
 
 ## Wiki
+
 See [powerbi-client wiki](https://github.com/Microsoft/PowerBI-JavaScript/wiki) for more details about embedding Power BI reports.
 
 See [powerbi-report-authoring wiki](https://github.com/microsoft/powerbi-report-authoring/wiki) for more details about authoring Power BI reports in embed session.
 
 Install from NPM:
 
-`npm install --save powerbi-report-authoring`
+ `npm install --save powerbi-report-authoring`
 
 ## Include the library via import or manually
 
 Ideally you would use module loader or compilation step to import using ES6 modules as:
 
-```javascript
+``` javascript
 import 'powerbi-report-authoring';
 ```
 
 However, the library is exported as a Universal Module and the powerbi-report-authoring.js script can be included before your apps closing `</body>` tag and after including powerbi-client as:
 
-```html
+``` html
 <script src="<path>/powerbi-client/dist/powerbi.js"></script>
 <script src="<path>/powerbi-report-authoring/dist/powerbi-report-authoring.js"></script>
 ```
