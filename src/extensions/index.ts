@@ -6,6 +6,10 @@ import { ReportExtensions } from "./reportExtensions";
 import { VisualExtensions } from "./visualExtensions";
 
 // TODO: Add unit tests to all methods in all extensions.
+
+/**
+ * @hidden
+ */
 export const extensions: IPowerBIClientExtension[] = [
     new ReportExtensions(),
     new PageExtensions(),

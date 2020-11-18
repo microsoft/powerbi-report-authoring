@@ -15,19 +15,38 @@ import { Config } from '../config';
 import { Errors } from '../errors';
 import { IPowerBIClientExtension } from './powerBIClientExtension';
 
+/**
+ * @hidden
+ * @export
+ * @class VisualExtensions
+ * @implements {IPowerBIClientExtension}
+ */
 export class VisualExtensions implements IPowerBIClientExtension {
+
+    /**
+     * @hidden
+     */
     private static delete<T>(visual: VisualDescriptor, url: string, body: any): Promise<T> {
         return VisualExtensions.sendRequestWithBody(visual, "delete", url, body);
     }
 
+    /**
+     * @hidden
+     */
     private static post<T>(visual: VisualDescriptor, url: string, body: any): Promise<T> {
         return VisualExtensions.sendRequestWithBody(visual, "post", url, body);
     }
 
+    /**
+     * @hidden
+     */
     private static put<T>(visual: VisualDescriptor, url: string, body: any): Promise<T> {
         return VisualExtensions.sendRequestWithBody(visual, "put", url, body);
     }
 
+    /**
+     * @hidden
+     */
     private static sendRequestWithBody<T>(visual: VisualDescriptor, method: "post" | "delete" | "put", url: string, body: any): Promise<T> {
         const hpm = VisualExtensions.hpm(visual);
         const uid = VisualExtensions.uid(visual);
@@ -42,6 +61,9 @@ export class VisualExtensions implements IPowerBIClientExtension {
                 });
     }
 
+    /**
+     * @hidden
+     */
     private static get<T>(visual: VisualDescriptor, url: string): Promise<T> {
         const hpm = VisualExtensions.hpm(visual);
         const uid = VisualExtensions.uid(visual);
@@ -56,18 +78,30 @@ export class VisualExtensions implements IPowerBIClientExtension {
                 });
     }
 
+    /**
+     * @hidden
+     */
     private static contentWindow(visual: VisualDescriptor): Window {
         return visual.page.report.iframe.contentWindow;
     }
 
+    /**
+     * @hidden
+     */
     private static uid(visual: VisualDescriptor): string {
         return visual.page.report.config.uniqueId;
     }
 
+    /**
+     * @hidden
+     */
     private static hpm(visual: VisualDescriptor): HttpPostMessage {
         return visual.page.report.service.hpm;
     }
 
+    /**
+     * @hidden
+     */
     initialize(): void {
         if (VisualDescriptor == null) {
             console.error(Errors.PowerBIClientIsNotInitialized);
