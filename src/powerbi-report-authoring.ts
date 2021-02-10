@@ -35,6 +35,11 @@ import { IVisualResponse } from './models';
 declare module 'report' {
 
     // See "Class Augmentation/Extension Notes" above.
+    /**
+     * Power BI report component
+     *
+     * @interface Report
+     */
     interface Report {
         /**
          * Get a visual type capabilities
@@ -59,6 +64,11 @@ declare module 'report' {
  */
 declare module 'page' {
     // See "Class Augmentation/Extension Notes" above.
+    /**
+     * Power BI report page component
+     *
+     * @interface Page
+     */
     interface Page {
         /**
          * Creates an empty visual of a specific type.
@@ -89,6 +99,11 @@ declare module 'page' {
  */
 declare module 'visualDescriptor' {
     // See "Class Augmentation/Extension Notes" above.
+    /**
+     * Component to change visual properties
+     *
+     * @interface VisualDescriptor
+     */
     interface VisualDescriptor {
         /**
          * Changes the visual type of an existing visual.
@@ -184,6 +199,9 @@ declare module 'visualDescriptor' {
     }
 }
 
+/**
+ * @hidden
+ */
 export function startAuthoring(): void {
     extensions.forEach((extension) => {
         extension.initialize();

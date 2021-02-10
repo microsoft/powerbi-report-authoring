@@ -11,7 +11,17 @@ import { Config } from '../config';
 import { Errors } from '../errors';
 import { IPowerBIClientExtension } from './powerBIClientExtension';
 
+/**
+ * @hidden
+ * @export
+ * @class ReportExtensions
+ * @implements {IPowerBIClientExtension}
+ */
 export class ReportExtensions implements IPowerBIClientExtension {
+
+    /**
+     * @hidden
+     */
     private static get<T>(report: Report, url: string): Promise<T> {
         const hpm = ReportExtensions.hpm(report);
         const uid = ReportExtensions.uid(report);
@@ -26,18 +36,30 @@ export class ReportExtensions implements IPowerBIClientExtension {
                 });
     }
 
+    /**
+     * @hidden
+     */
     private static contentWindow(report: Report): Window {
         return report.iframe.contentWindow;
     }
 
+    /**
+     * @hidden
+     */
     private static uid(report: Report): string {
         return report.config.uniqueId;
     }
 
+    /**
+     * @hidden
+     */
     private static hpm(report: Report): HttpPostMessage {
         return report.service.hpm;
     }
 
+    /**
+     * @hidden
+     */
     initialize(): void {
         if (Report == null) {
             console.error(Errors.PowerBIClientIsNotInitialized);
