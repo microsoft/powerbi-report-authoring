@@ -39,8 +39,8 @@
     "tslint": "^5.16.0",
     "typescript": "^3.8.2",
     "uglify-save-license": "^0.4.1",
-    "webpack": "^4.41.6",
-    "webpack-stream": "^5.2.1"
+    "webpack": "^5.71.0",
+    "webpack-stream": "^7.0.0"
   },
   "dependencies": {
     "http-post-message": "^0.2",
