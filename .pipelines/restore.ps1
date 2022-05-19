@@ -17,14 +17,13 @@ Write-Host "done: try install latest npm version"
 
 # Do not update $exitCode because we do not want to fail if install latest npm version fails.
 
+Write-Host "start: install npx globally"
+& npm install -g npx
+Write-Host "done: install npx globally"
+
 Write-Host "start: npm install"
 & npm install --no-audit --no-save
 Write-Host "done: npm install"
-
-Write-Host "start: npm install gulp"
-& npm install -g gulp
-& npm link gulp --no-bin-links
-Write-Host "done: npm install gulp"
 
 $exitCode += $LASTEXITCODE;
 
