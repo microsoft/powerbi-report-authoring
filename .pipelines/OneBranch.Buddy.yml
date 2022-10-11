@@ -122,21 +122,23 @@ extends:
                 $(Build.SourcesDirectory)\*.tgz
               TargetFolder: '$(OUTPUTROOT)\outputs\build\tgz-package'
 
-          # Commands to run during the packaging stage.
-          - task: CmdLine@2
-            displayName: 'Nuget Pack'
-            inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
-              workingDirectory: '$(Build.SourcesDirectory)'
+          # Commenting this task to test the tests are passing or not
+          # Need to undo the comment and work on the issue
+          # # Commands to run during the packaging stage.
+          # - task: CmdLine@2
+          #   displayName: 'Nuget Pack'
+          #   inputs:
+          #     script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
+          #     workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Copying nuget pack to the Output folder.
-          - task: CopyFiles@2
-            displayName: 'Copy nuget pack to Output folder'
-            inputs:
-              SourceFolder: '$(Build.SourcesDirectory)'
-              Contents: |
-                $(Build.SourcesDirectory)\**\Microsoft.PowerBI.JavaScript.*.nupkg
-              TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
+          # # Copying nuget pack to the Output folder.
+          # - task: CopyFiles@2
+          #   displayName: 'Copy nuget pack to Output folder'
+          #   inputs:
+          #     SourceFolder: '$(Build.SourcesDirectory)'
+          #     Contents: |
+          #       $(Build.SourcesDirectory)\**\Microsoft.PowerBI.JavaScript.*.nupkg
+          #     TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
 
           # Commands to run during the testing stage.
           - task: CmdLine@2
