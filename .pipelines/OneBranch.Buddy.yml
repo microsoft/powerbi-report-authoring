@@ -115,7 +115,7 @@ extends:
               command: 'sign'
               signing_environment: 'azure-ado'
               signing_profile: 'internal_azure_service'
-              files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\Microsoft.PowerBI.JavaScript.*.nupkg'
+              files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\Microsoft.PowerBI.ReportAuthoring.*.nupkg'
               search_root: '$(Build.SourcesDirectory)'
 
           # Copying build artifacts to the Output folder.
@@ -143,5 +143,5 @@ extends:
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)'
               Contents: |
-                $(Build.SourcesDirectory)\**\Microsoft.PowerBI.JavaScript.*.nupkg
+                $(Build.SourcesDirectory)\**\Microsoft.PowerBI.ReportAuthoring.*.nupkg
               TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
