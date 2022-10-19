@@ -101,11 +101,12 @@ extends:
               workingDirectory: '$(Build.SourcesDirectory)'
 
           # Commands to run during the packaging stage.
-          - task: CmdLine@2
+          - task: NuGetCommand@2
             displayName: 'Nuget Pack'
             inputs:
               script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
+              packagesToPack: '$(Build.SourcesDirectory)**/*.nuspec'
 
           # Signing the files created by the build and packaging script
           - task: onebranch.pipeline.signing@1
