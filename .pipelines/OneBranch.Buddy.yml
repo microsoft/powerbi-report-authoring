@@ -106,7 +106,6 @@ extends:
             inputs:
               script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
-              packagesToPack: '$(Build.SourcesDirectory)\**\*.nuspec'
 
           # Signing the files created by the build and packaging script
           - task: onebranch.pipeline.signing@1
