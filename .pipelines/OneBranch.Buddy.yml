@@ -104,8 +104,11 @@ extends:
           - task: NuGetCommand@2
             displayName: 'Nuget Pack'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
-              workingDirectory: '$(Build.SourcesDirectory)'
+              # command: 'pack'
+              # packagesToPack: '**\**.*nuspec'
+              basePath: '**\**\PowerBI.ReportAuthoring.nuspec'
+              # script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
+              packDestination: '$(OUTPUTROOT)\outputs\package\Release'
 
           # Signing the files created by the build and packaging script
           - task: onebranch.pipeline.signing@1
@@ -114,7 +117,7 @@ extends:
               command: 'sign'
               signing_environment: 'azure-ado'
               signing_profile: 'internal_azure_service'
-              files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\Microsoft.PowerBI.ReportAuthoring.*.nupkg'
+              files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\**.*.nupkg'
               search_root: '$(Build.SourcesDirectory)'
 
           # Copying build artifacts to the Output folder.
