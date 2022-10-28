@@ -140,7 +140,6 @@ extends:
           - task: CopyFiles@2
             displayName: 'Copy nuget pack to Output folder'
             inputs:
-              SourceFolder: '$(Build.SourcesDirectory)'
               Contents: |
-                $(Build.SourcesDirectory)\**\Microsoft.PowerBI.ReportAuthoring.*.nupkg
+                $(Build.SourcesDirectory)\**\**.**.nupkg
               TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
