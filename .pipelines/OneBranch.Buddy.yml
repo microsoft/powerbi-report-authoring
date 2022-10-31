@@ -102,17 +102,8 @@ extends:
               filePath: '$(Build.SourcesDirectory)\.pipelines\package.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
 
-          # - task: NuGetCommand@2
-          #   displayName: 'Nuget Pack'
-          #   inputs:
-          #     # command: 'pack'
-          #     # packagesToPack: '**\**.*nuspec'
-          #     basePath: '**\**\PowerBI.ReportAuthoring.nuspec'
-          #     # script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
-          #     packDestination: '$(OUTPUTROOT)\outputs\package\Release'
-
           - task: NuGetToolInstaller@1
-            displayName: 'Nuget Installer'
+            displayName: 'Install Nuget'
             inputs:
               versionSpec: '*'
               checkLatest: true
@@ -123,7 +114,6 @@ extends:
               targetType: 'filePath'
               filePath: '$(Build.SourcesDirectory)\.pipelines\nuget_pack.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
-
 
           # Signing the files created by the build and packaging script
           - task: onebranch.pipeline.signing@1
