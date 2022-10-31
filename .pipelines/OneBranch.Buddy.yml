@@ -58,10 +58,11 @@ extends:
 
         steps:
           # Custom Versioning - we will build the version using package.json in versioning commands.
-          - task: CmdLine@2
+          - task: PowerShell@2
             displayName: 'Set Version'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd version.ps1'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\version.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
 
           # Add the versioning task after running Version script
@@ -80,35 +81,49 @@ extends:
             inputs:
               workingFile: '$(Build.SourcesDirectory)\.npmrc'
 
-          - task: CmdLine@2
+          - task: PowerShell@2
             displayName: 'Restore'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd restore.ps1'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\restore.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Commands to run during the build stage.
-          - task: CmdLine@2
+          - task: PowerShell@2
             displayName: 'Build'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd build.ps1'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\build.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Commands to run during the packaging stage.
-          - task: CmdLine@2
+          - task: PowerShell@2
             displayName: 'Package'
             inputs:
-              script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd package.ps1'
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\package.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Commands to run during the packaging stage.
-          - task: NuGetCommand@2
-            displayName: 'Nuget Pack'
+          # - task: NuGetCommand@2
+          #   displayName: 'Nuget Pack'
+          #   inputs:
+          #     # command: 'pack'
+          #     # packagesToPack: '**\**.*nuspec'
+          #     basePath: '**\**\PowerBI.ReportAuthoring.nuspec'
+          #     # script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
+          #     packDestination: '$(OUTPUTROOT)\outputs\package\Release'
+
+          - task: NuGetToolInstaller@1
+            displayName: 'Nuget Installer'
             inputs:
-              # command: 'pack'
-              # packagesToPack: '**\**.*nuspec'
-              basePath: '**\**\PowerBI.ReportAuthoring.nuspec'
-              # script: '$(Build.SourcesDirectory)\.pipelines\onebranch_run_ps.cmd nuget_pack.ps1'
-              packDestination: '$(OUTPUTROOT)\outputs\package\Release'
+              versionSpec: '*'
+              checkLatest: true
+
+          - task: PowerShell@2
+            displayName: 'Nuget Package'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\nuget_pack.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
 
           # Signing the files created by the build and packaging script
           - task: onebranch.pipeline.signing@1
