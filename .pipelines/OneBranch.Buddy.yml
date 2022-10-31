@@ -125,7 +125,7 @@ extends:
               files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\**.*.nupkg'
               search_root: '$(Build.SourcesDirectory)'
 
-          # Copying build artifacts to the Output folder.
+          # Copying build artifacts to the Output folder
           - task: CopyFiles@2
             displayName: 'Copy Dist to Output folder'
             inputs:
@@ -136,7 +136,7 @@ extends:
                 $(Build.SourcesDirectory)\README.md
               TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
 
-          # Copying tgz package to the Output folder.
+          # Copying tgz package to the Output folder
           - task: CopyFiles@2
             displayName: 'Copy tgz-package to Output folder'
             inputs:
@@ -144,7 +144,7 @@ extends:
                 $(Build.SourcesDirectory)\**\*.tgz
               TargetFolder: '$(OUTPUTROOT)\outputs\package\tgz-package'
 
-          # Copying nuget pack to the Output folder.
+          # Copying nuget pack to the Output folder
           - task: CopyFiles@2
             displayName: 'Copy nuget pack to Output folder'
             inputs:
