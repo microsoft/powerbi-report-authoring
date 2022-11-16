@@ -23,11 +23,7 @@ variables:
   ROOT: $(Build.SourcesDirectory)
   REPOROOT: $(Build.SourcesDirectory)
   OUTPUTROOT: $(REPOROOT)\out
-  CDP_USER_SOURCE_FOLDER_CONTAINER_PATH: $(Build.SourcesDirectory)
-  CDP_DEFINITION_BUILD_COUNT_DAY: $[counter(format('{0:yyyyMMdd}', pipeline.startTime), 1)]
-  CDP_DEFINITION_BUILD_COUNT_MONTH: $[counter(format('{0:yyyyMM}', pipeline.startTime), 1)]
-  CDP_DEFINITION_BUILD_COUNT_YEAR: $[counter(format('{0:yyyy}', pipeline.startTime), 1)]
-  NUGET_XMLDOC_MODE: none
+  NUGET_XMLDOC_MODE: skip
 
   WindowsContainerImage: 'cdpxwin1809.azurecr.io/global/obinfra/windows/1809/vs2019:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
 
@@ -46,14 +42,10 @@ extends:
     globalSdl: # https://aka.ms/obpipelines/sdl
       tsa:
         enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
-      # credscan:
-      #   suppressionsFile: $(Build.SourcesDirectory)\.config\CredScanSuppressions.json
       binskim:
         break: true # always break the build on binskim issues in addition to TSA upload
       policheck:
         break: true # always break the build on policheck issues. You can disable it by setting to 'false'
-      # baseline:
-      #   baselineFile: $(Build.SourcesDirectory)\.gdn\global.gdnbaselines
       cg:
         failOnAlert: false
 
@@ -63,153 +55,110 @@ extends:
       - job: main
         pool:
           type: windows  # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
-        
+
         variables:
-          ob_outputDirectory: '$(REPOROOT)\out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+          ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
           ob_sdl_binskim_break: true # https://aka.ms/obpipelines/sdl
           ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}: # conditionally enable symbolsPublishing for master branch only
             ob_symbolsPublishing_enabled: true # https://aka.ms/obpipelines/symbols
-          # ob_sdl_baseline_baselineFile: $(Build.SourcesDirectory)\.gdn\build.official.gdnbaselines
-          # ob_sdl_codeSignValidation_excludes: -|**\*.js # Example -|**\*.js;-|**\Test*\**
           ob_artifactBaseName: 'drop'
           ob_sdl_cg_failOnAlert: false
 
         steps:
-          - task: onebranch.pipeline.version@1 # generates automatic version. For other versioning options check https://aka.ms/obpipelines/versioning
-            displayName: 'Setup BuildNumber'
+          # Custom Versioning - we will build the version using package.json in versioning commands.
+          - task: PowerShell@2
+            displayName: 'Set Version'
             inputs:
-              system: 'RevisionCounter'
-              major: '1'
-              minor: '0'
-              exclude_commit: true
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\version.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
 
-          # multiple signing tasks may be needed after each CopyFiles@2 tasks if differnet artifacts in the CDPx yaml are signed with different profiles
-          #- task: onebranch.pipeline.signing@1
-          #  displayName: 'Sign binaries'
-          #  inputs:
-          #    command: 'sign'
-          #    signing_environment: 'azure-ado'
-          #    signing_profile: 'internal_azure_service'
-          #    files_to_sign: '**/*.exe;**/*.dll;**/*.ps1;**/*.psm1;**/*.js'
-          #    search_root: '$(Build.SourcesDirectory)\out'
-          
-          # one CmdLine@2 for each CDPx stage (restore/build/package/test) as needed
-          #- task: CmdLine@2
-          #  displayName: '<name from pipeline.user.full.yml'
-          #  inputs:
-          #    script: '$(Build.SourcesDirectory)\<script name>'
-          #    workingDirectory: '$(Build.SourcesDirectory)'
+          # Add the versioning task after running Version script
+          - task: onebranch.pipeline.version@1
+            inputs:
+              system: 'Custom'
+              customVersion: '$(CustomBuildNumber)'
 
-          #  One CopyFiles@2 for each CDPx artifacts entry for each stage (restore/build/package/test) as needed
-          #- task: CopyFiles@2
-          #  inputs:
-          #    SourceFolder: '<'from' from artifacts section>'
-          #    Contents: '**\*'
-          #    TargetFolder: '<'to' from artifacts section
+          - task: NodeTool@0
+            displayName: 'Install Node.js'
+            inputs:
+              versionSpec: '16.x'
 
-          # Move this block after a task block to "see" current file layout on host agent.
-          # Usually this belongs at the bottom of the build ( right before inline diffs ).  
-          # - task: CmdLine@2 
-          #   displayName: 'Generate file list'
-          #   inputs:
-          #     targetType: 'inline'
-          #     script: |
-          #       md $(Build.SourcesDirectory)\out
-          #       dir /b /s * > $(Build.SourcesDirectory)\out\filelist.txt
+          - task: npmAuthenticate@0
+            displayName: 'NPM Authenticate'
+            inputs:
+              workingFile: '$(Build.SourcesDirectory)\.npmrc'
 
-################################################################################################
-#                              Remove tasks below before handoff                               #
-################################################################################################
-#        ↓ 
-#        ↓- task: After you uncomment below tasks, please make sure your '-' align to the first '-' of this line.
-#        ↓ 
-          
-          # # Uncomment this task if your CDPx yaml has publish_to_legacy_artifacts set to TRUE 
-          # - task: DownloadBuildArtifacts@1
-          #   displayName: '⚡️Download CDPx Build Artifact'
-          #   inputs:
-          #     buildType: 'specific'
-          #     project: '$(System.TeamProjectId)'
-          #     pipeline: '<cdpx pipeline/definition ID>'
-          #     buildVersionToDownload: 'specific'
-          #     buildId: '<cdpx build ID>'
-          #     downloadType: 'single'
-          #     artifactName: 'drop'
-          #     downloadPath: '$(REPOROOT)\cdpxArt'
-          
-          # # Uncomment this task if your CDPx yaml has publish_to_pipeline_artifacts set to TRUE
-          # - task: DownloadPipelineArtifact@2
-          #   displayName: '⚡️Download CDPx Pipeline Artifact'
-          #   inputs:
-          #     buildType: 'specific'
-          #     project: '$(System.TeamProjectId)'
-          #     definition: '<cdpx pipeline/definition ID>'
-          #     buildVersionToDownload: 'specific'
-          #     pipelineId: '<cdpx build ID>'   #Correspond the buildId in above task. The name 'pipelineId' here is a bit confusing.
-          #     artifactName: 'drop'
-          #     targetPath: '$(REPOROOT)\cdpxArt'
-          
-          # - task: Bash@3
-          #   displayName: '⚡️Install Powershell'
-          #   condition: ne(variables['Agent.OS'], 'Windows_NT')
-          #   inputs:
-          #     targetType: 'inline'
-          #     script: |
-          #       #!/bin/bash
-          #       apt-get update
-          #       apt-get install -y wget apt-transport-https software-properties-common
-          #       wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-          #       dpkg -i packages-microsoft-prod.deb
-          #       apt-get update
-          #       apt-get install -y powershell
-          
-          # - task: PowerShell@2
-          #   displayName: '⚡️Diff Build Outputs'
-          #   inputs:
-          #     targetType: 'inline'
-          #     script: |
-          #       [System.Collections.ArrayList] $cdpxFiles = @()
-          #       [System.Collections.ArrayList] $cdpxFolders = @()
-          #       [System.Collections.ArrayList] $obpFiles = @()
-          #       [System.Collections.ArrayList] $obpFolders = @()
-          #       [System.Collections.ArrayList] $intersection = @()
-          # 
-          #       $cdpxArtifactDirectory = Join-Path $(REPOROOT) "cdpxArt"
-          #       if (($(Get-ChildItem $cdpxArtifactDirectory).Count -eq 1) -and (Test-Path $(Join-Path $cdpxArtifactDirectory "drop"))) {
-          #         $cdpxOutputsDirectory = Join-Path $(Join-Path $cdpxArtifactDirectory "drop") "outputs"
-          #       }
-          #       else {
-          #         $cdpxOutputsDirectory = Join-Path $cdpxArtifactDirectory "outputs"
-          #       }
-          # 
-          #       Get-ChildItem $cdpxOutputsDirectory -recurse -force -directory | % { $null = $cdpxFolders.Add($($_.FullName).Replace($cdpxOutputsDirectory, "")) }
-          #       Get-ChildItem $cdpxOutputsDirectory -recurse -force -file | % { $null = $cdpxFiles.Add($($_.FullName).Replace($cdpxOutputsDirectory, "")) }
-          #       
-          #       $obpOutputsDirectory = Join-Path $(ob_outputDirectory) "outputs"
-          #       Get-ChildItem $obpOutputsDirectory -recurse -force -directory | % { $null = $obpFolders.Add($($_.FullName).Replace($obpOutputsDirectory, "")) }
-          #       Get-ChildItem $obpOutputsDirectory -recurse -force -file | % { $null = $obpFiles.Add($($_.FullName).Replace($obpOutputsDirectory, "")) }
-          # 
-          #       Write-Output "CDPx build metadata:" 
-          #       Write-Output "    Directories: $($cdpxFolders.Count)"
-          #       Write-Output "    Files: $($cdpxFiles.Count)"
-          # 
-          #       Write-Output "OBP build metadata:" 
-          #       Write-Output "    Directories: $($obpFolders.Count)"
-          #       Write-Output "    Files: $($obpFiles.Count)"
-          #       Write-Output "--------------------------------------------------"
-          #       
-          #       foreach ($file in $cdpxFiles) {
-          #         if ($obpFiles.Contains($file)) {
-          #           $null = $intersection.Add($file)
-          #         }
-          #       }
-          # 
-          #       foreach ($file in $intersection) {
-          #         $obpFiles.Remove($file)
-          #         $cdpxFiles.Remove($file)
-          #       }
-          # 
-          #       Write-Output "CDPx build files missing in OBP build:"
-          #       $cdpxFiles | % { Write-Output "    $_" }
-          #       Write-Output "OBP build files missing in CDPx build:"
-          #       $obpFiles | % { Write-Output "    $_" }
+          - task: PowerShell@2
+            displayName: 'Restore'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\restore.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
+          - task: PowerShell@2
+            displayName: 'Build'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\build.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
+          - task: PowerShell@2
+            displayName: 'Package'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\package.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
+          - task: NuGetToolInstaller@1
+            displayName: 'Install Nuget'
+            inputs:
+              versionSpec: '*'
+              checkLatest: true
+
+          - task: PowerShell@2
+            displayName: 'Nuget Package'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\nuget_pack.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
+          # Signing the files created by the build and packaging script
+          - task: onebranch.pipeline.signing@1
+            displayName: 'Sign binaries'
+            inputs:
+              command: 'sign'
+              signing_environment: 'azure-ado'
+              signing_profile: 'internal_azure_service'
+              files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\**.*.nupkg'
+              search_root: '$(Build.SourcesDirectory)'
+
+          # Copying build artifacts to the Output folder
+          - task: CopyFiles@2
+            displayName: 'Copy Dist to Output folder'
+            inputs:
+              SourceFolder: $(Build.SourcesDirectory)
+              Contents: |
+                dist\**\*
+                LICENSE.txt
+                package.json
+                README.md
+              TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
+
+          # Copying tgz package to the Output folder
+          - task: CopyFiles@2
+            displayName: 'Copy tgz-package to Output folder'
+            inputs:
+              SourceFolder: $(Build.SourcesDirectory)
+              Contents: |
+                **\*.tgz
+              TargetFolder: '$(OUTPUTROOT)\outputs\package\tgz-package'
+
+          # Copying nuget pack to the Output folder
+          - task: CopyFiles@2
+            displayName: 'Copy nuget pack to Output folder'
+            inputs:
+              SourceFolder: $(Build.SourcesDirectory)
+              Contents: |
+                **\Microsoft.PowerBI.ReportAuthoring.*.nupkg
+              TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
