@@ -129,25 +129,28 @@ extends:
           - task: CopyFiles@2
             displayName: 'Copy Dist to Output folder'
             inputs:
+              SourceFolder: $(Build.SourcesDirectory)
               Contents: |
-                $(Build.SourcesDirectory)\dist\**\*
-                $(Build.SourcesDirectory)\LICENSE.txt
-                $(Build.SourcesDirectory)\package.json
-                $(Build.SourcesDirectory)\README.md
+                dist\**\*
+                LICENSE.txt
+                package.json
+                README.md
               TargetFolder: '$(OUTPUTROOT)\outputs\build\build_artifacts'
 
           # Copying tgz package to the Output folder
           - task: CopyFiles@2
             displayName: 'Copy tgz-package to Output folder'
             inputs:
+              SourceFolder: $(Build.SourcesDirectory)
               Contents: |
-                $(Build.SourcesDirectory)\**\*.tgz
+                **\*.tgz
               TargetFolder: '$(OUTPUTROOT)\outputs\package\tgz-package'
 
           # Copying nuget pack to the Output folder
           - task: CopyFiles@2
             displayName: 'Copy nuget pack to Output folder'
             inputs:
+              SourceFolder: $(Build.SourcesDirectory)
               Contents: |
-                $(Build.SourcesDirectory)\**\**.**.nupkg
+                **\Microsoft.PowerBI.ReportAuthoring.*.nupkg
               TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
