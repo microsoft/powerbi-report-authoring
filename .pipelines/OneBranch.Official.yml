@@ -17,35 +17,34 @@ parameters: # parameters are shown up in ADO UI in a build queue time
   default: false
 
 variables:
-  CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
   system.debug: ${{ parameters.debug }}
   ENABLE_PRS_DELAYSIGN: 1
   ROOT: $(Build.SourcesDirectory)
   REPOROOT: $(Build.SourcesDirectory)
   OUTPUTROOT: $(REPOROOT)\out
   NUGET_XMLDOC_MODE: skip
+  ${{ if eq(variables['Build.DefinitionName'], 'powerbi-report-authoring-Official') }}:
+    obpTemplate: v2/OneBranch.Official.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  ${{ else }}:
+    obpTemplate: v2/OneBranch.NonOfficial.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
 
   WindowsContainerImage: 'cdpxwin1809.azurecr.io/global/obinfra/windows/1809/vs2019:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
 
 resources:
-  repositories: 
+  repositories:
     - repository: templates
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
 
 extends:
-  template: v2/OneBranch.Official.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  template: ${{ variables.obpTemplate }}
   parameters:
     cloudvault: # https://aka.ms/obpipelines/cloudvault
       enabled: false
     globalSdl: # https://aka.ms/obpipelines/sdl
       tsa:
-        enabled: false # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
-      binskim:
-        break: true # always break the build on binskim issues in addition to TSA upload
-      policheck:
-        break: true # always break the build on policheck issues. You can disable it by setting to 'false'
+        enabled: false
       cg:
         failOnAlert: false
 
@@ -63,6 +62,7 @@ extends:
             ob_symbolsPublishing_enabled: true # https://aka.ms/obpipelines/symbols
           ob_artifactBaseName: 'drop'
           ob_sdl_cg_failOnAlert: false
+          ob_sdl_codeSignValidation_excludes: 'regex|.+(?:exe|dll)$;-|*.nd.dll;-|.gdn\\**'
 
         steps:
           # Custom Versioning - we will build the version using package.json in versioning commands.
@@ -123,16 +123,6 @@ extends:
               filePath: '$(Build.SourcesDirectory)\.pipelines\nuget_pack.ps1'
               workingDirectory: '$(Build.SourcesDirectory)'
 
-          # Signing the files created by the build and packaging script
-          - task: onebranch.pipeline.signing@1
-            displayName: 'Sign binaries'
-            inputs:
-              command: 'sign'
-              signing_environment: 'azure-ado'
-              signing_profile: 'internal_azure_service'
-              files_to_sign: 'dist\**\*;LICENSE.txt;package.json;README.md;**\*.tgz;**\**.*.nupkg'
-              search_root: '$(Build.SourcesDirectory)'
-
           # Copying build artifacts to the Output folder
           - task: CopyFiles@2
             displayName: 'Copy Dist to Output folder'
@@ -162,3 +152,13 @@ extends:
               Contents: |
                 **\Microsoft.PowerBI.ReportAuthoring.*.nupkg
               TargetFolder: '$(OUTPUTROOT)\outputs\package\Release'
+
+          # Signing the files created by the build and packaging script
+          - task: onebranch.pipeline.signing@1
+            displayName: 'Sign binaries'
+            inputs:
+              command: 'sign'
+              signing_environment: 'azure-ado'
+              signing_profile: 'internal_azure_service'
+              files_to_sign: '**'
+              search_root: '$(OUTPUTROOT)'
