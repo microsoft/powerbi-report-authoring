@@ -53,7 +53,7 @@ export class VisualExtensions implements IPowerBIClientExtension {
     const contentWindow = VisualExtensions.contentWindow(visual);
     const sdkVersion = Config.version;
 
-    return hpm[method as string]<T>(url, body, { uid, sdkVersion }, contentWindow)
+    return hpm[method as string]<T>(url, body, { uid, 'x-report-authoring-sdk-version': sdkVersion }, contentWindow)
       .then(
         (response) => response.body,
         (response) => {
@@ -70,7 +70,7 @@ export class VisualExtensions implements IPowerBIClientExtension {
     const contentWindow = VisualExtensions.contentWindow(visual);
     const sdkVersion = Config.version;
 
-    return hpm.get<T>(url, { uid, sdkVersion }, contentWindow)
+    return hpm.get<T>(url, { uid, 'x-report-authoring-sdk-version': sdkVersion }, contentWindow)
       .then(
         (response) => response.body,
         (response) => {
