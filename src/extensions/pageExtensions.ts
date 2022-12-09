@@ -9,6 +9,7 @@ import {
   IVisualLayout
 } from 'powerbi-models';
 
+import { Config } from '../config';
 import { Errors } from '../errors';
 import { IVisualResponse } from '../models';
 import { IPowerBIClientExtension } from './powerBIClientExtension';
@@ -28,8 +29,9 @@ export class PageExtensions implements IPowerBIClientExtension {
     const hpm = PageExtensions.hpm(page);
     const uid = PageExtensions.uid(page);
     const contentWindow = PageExtensions.contentWindow(page);
+    const sdkVersion = Config.version;
 
-    return hpm.post<T>(url, body, { uid }, contentWindow)
+    return hpm.post<T>(url, body, { uid, 'x-report-authoring-sdk-version': sdkVersion }, contentWindow)
       .then( (response) => {
         return response.body;
       },

@@ -28,7 +28,7 @@ export class ReportExtensions implements IPowerBIClientExtension {
     const contentWindow = ReportExtensions.contentWindow(report);
     const sdkVersion = Config.version;
 
-    return hpm.get<T>(url, { uid, sdkVersion }, contentWindow)
+    return hpm.get<T>(url, { uid, 'x-report-authoring-sdk-version': sdkVersion }, contentWindow)
       .then(
         (response) => response.body,
         (response) => {
