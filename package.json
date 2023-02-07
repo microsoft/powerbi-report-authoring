@@ -52,5 +52,8 @@
     "powerbi-client": "^2.13",
     "powerbi-models": "^1.4"
   },
+  "publishConfig": {
+    "tag": "beta"
+  },
   "typings": "dist/powerbi-report-authoring.d.ts"
 }
