@@ -1,0 +1,202 @@
+#################################################################################
+#                         OneBranch Pipelines - Official                        #
+# This pipeline was created by EasyStart from a sample located at:              #
+#   https://aka.ms/obpipelines/easystart/samples                                #
+# Documentation:  https://aka.ms/obpipelines                                    #
+# Yaml Schema:    https://aka.ms/obpipelines/yaml/schema                        #
+# Retail Tasks:   https://aka.ms/obpipelines/tasks                              #
+# Support:        https://aka.ms/onebranchsup                                   #
+#################################################################################
+
+trigger: none # https://aka.ms/obpipelines/triggers
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+  pipelines:
+    - pipeline: PowerbiReportAuthoringOfficial
+      source: powerbi-report-authoring-Official
+
+variables:
+  ENABLE_PRS_DELAYSIGN: 1
+  ROOT: $(Build.SourcesDirectory)
+  REPOROOT: $(Build.SourcesDirectory)
+  OUTPUTROOT: $(REPOROOT)\out
+  NUGET_XMLDOC_MODE: none
+  system.debug: true
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+
+extends:
+  template: v2/OneBranch.Official.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    globalSdl: # https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled: true # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
+      cg:
+        failOnAlert: false
+      publishLogs:
+        enabled: false
+    featureFlags:
+      WindowsHostVersion: 1ESWindows2022
+
+    stages:
+    - stage: Release_Internal
+      displayName: Release NPM internal
+
+      jobs:
+      - job: PublishToNPMInternal
+        displayName: Publish to NPM Internal Feed
+        pool:
+          type: windows
+
+        variables:
+          ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: "Download build files from the powerbi-report-authoring-Official pipeline"
+          inputs:
+            buildType: 'specific'
+            project: '4c7b5adb-c2d0-4f18-b23c-edc4ac30f4e1' # Embedded
+            definition: '8490' # powerbi-report-authoring-Official
+            buildVersionToDownload: 'latest'
+            artifactName: 'drop'
+            targetPath: '$(Pipeline.Workspace)\PublishedNpmArtifact'
+
+        - task: Npm@1
+          displayName: 'npm publish internal'
+          inputs:
+            command: publish
+            workingDir: '$(Pipeline.Workspace)\PublishedNpmArtifact\outputs\build\build_artifacts'
+            verbose: true
+            publishRegistry: useFeed
+            publishFeed: 'd95dbb95-6687-4730-b306-abe69704b45d' # PowerBI.SDKs
+
+    - stage: Prod_ApprovalToExternalPublish
+      displayName: Approval to external publish
+      trigger: manual
+      dependsOn: []
+      variables:
+        ob_release_environment: Production
+        ob_release_usedeploymentjob: true
+        ob_deploymentjob_environment: PBIEmbed
+
+      jobs:
+      - job: ApprovalToExternalPublish
+        displayName: Approval to publish the powerbi-report-authoring package to external
+        pool:
+          type: release
+
+        steps:
+        - download: PowerbiReportAuthoringOfficial
+
+    - stage: Release_External
+      displayName: Release NPM external
+      dependsOn: Prod_ApprovalToExternalPublish
+      condition: succeeded()
+
+      jobs:
+      - job: PublishToNPMExternal
+        displayName: Publish to NPM External
+        pool:
+          type: windows
+
+        variables:
+          ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: "Download build files from the powerbi-report-authoring-Official pipeline"
+          inputs:
+            buildType: 'specific'
+            project: '4c7b5adb-c2d0-4f18-b23c-edc4ac30f4e1' # Embedded
+            definition: '8490' # powerbi-report-authoring-Official
+            buildVersionToDownload: 'latest'
+            artifactName: 'drop'
+            targetPath: '$(Pipeline.Workspace)\PublishedNpmArtifact'
+
+        - task: EsrpRelease@8
+          inputs:
+            keyvaultname: 'Trident-ESRP'
+            authcertname: 'Fabric-ESRP-authentication'
+            signcertname: 'Fabric-ESRP-signing'
+            connectedservicename: 'Fabric ESRP-Embedded'
+            clientid: 'f351681f-63af-4d0a-80b2-80bc2ec5cbb2'
+            intent: 'PackageDistribution'
+            contentType: 'NPM'
+            contentsource: 'Folder'
+            folderlocation: '$(Pipeline.Workspace)\PublishedNpmArtifact\outputs\package\tgz-package'
+            waitforreleasecompletion: true
+            owners: 'alonyeshurun@microsoft.com'
+            approvers: 'alonyeshurun@microsoft.com'
+            serviceendpointurl: 'https://api.esrp.microsoft.com'
+            mainpublisher: 'ESRPRELPACMAN'
+            domaintenantid: '72f988bf-86f1-41af-91ab-2d7cd011db47'
+
+    - stage: Prod_ApprovalToAddLatestTag
+      displayName: Approval to set the released package as latest
+      trigger: manual
+      dependsOn: []
+      variables:
+        ob_release_environment: Production
+        ob_release_usedeploymentjob: true
+        ob_deploymentjob_environment: PBIEmbed
+
+      jobs:
+      - job: ApprovalToAddLatestTag
+        displayName: Approval to add the latest tag
+        pool:
+          type: release
+
+        steps:
+        - download: PowerbiReportAuthoringOfficial
+
+    - stage: MarkPowerbiReportAuthoringNpmPackageLatest
+      displayName: Set as latest
+      dependsOn:
+      - Release_External
+      - Prod_ApprovalToAddLatestTag
+      condition: succeeded()
+
+      jobs:
+      - job: AddLatestTag
+        displayName: Add the latest tag on the released version
+        pool:
+          name: Azure Pipelines
+          type: windows
+          isCustom: true
+          vmImage: 'windows-latest'
+
+        variables:
+          ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: "Download build files from the powerbi-report-authoring-Official pipeline"
+          inputs:
+            buildType: 'specific'
+            project: '4c7b5adb-c2d0-4f18-b23c-edc4ac30f4e1' # Embedded
+            definition: '8490' # powerbi-report-authoring-Official
+            buildVersionToDownload: 'latest'
+            artifactName: 'drop'
+            targetPath: '$(Pipeline.Workspace)\PublishedNpmArtifact'
+
+        - task: PowerShell@2
+          displayName: 'Set CustomBuildNumber version'
+          inputs:
+            targetType: 'filePath'
+            filePath: '$(Build.SourcesDirectory)\.pipelines\version.ps1'
+            workingDirectory: '$(Build.SourcesDirectory)'
+
+        - task: Npm@1
+          displayName: 'npm mark version as latest'
+          condition: succeeded()
+          inputs:
+            command: custom
+            workingDir: '$(Pipeline.Workspace)\PublishedNpmArtifact\outputs\build\build_artifacts'
+            verbose: true
+            customCommand: 'dist-tag add powerbi-report-authoring@$(CustomBuildNumber) latest'
+            customEndpoint: 'New Power BI NpmJS'
