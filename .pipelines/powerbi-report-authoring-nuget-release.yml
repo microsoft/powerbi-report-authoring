@@ -1,0 +1,129 @@
+#################################################################################
+#                         OneBranch Pipelines - Official                        #
+# This pipeline was created by EasyStart from a sample located at:              #
+#   https://aka.ms/obpipelines/easystart/samples                                #
+# Documentation:  https://aka.ms/obpipelines                                    #
+# Yaml Schema:    https://aka.ms/obpipelines/yaml/schema                        #
+# Retail Tasks:   https://aka.ms/obpipelines/tasks                              #
+# Support:        https://aka.ms/onebranchsup                                   #
+#################################################################################
+
+trigger: none # https://aka.ms/obpipelines/triggers
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+  pipelines:
+    - pipeline: PowerbiReportAuthoringOfficial
+      source: powerbi-report-authoring-Official
+
+variables:
+  ENABLE_PRS_DELAYSIGN: 1
+  ROOT: $(Build.SourcesDirectory)
+  REPOROOT: $(Build.SourcesDirectory)
+  OUTPUTROOT: $(REPOROOT)\out
+  NUGET_XMLDOC_MODE: none
+  system.debug: true
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2022/vse2022:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+
+extends:
+  template: v2/OneBranch.Official.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    globalSdl: # https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled: true # onebranch publish all sdl results to TSA. If TSA is disabled all SDL tools will forced into 'break' build mode.
+      cg:
+        failOnAlert: false
+      publishLogs:
+        enabled: false
+    featureFlags:
+      WindowsHostVersion: 1ESWindows2022
+
+    stages:
+    - stage: Release_Internal
+      displayName: Release NuGet internal
+
+      jobs:
+      - job: PublishToNuGetInternal
+        displayName: Publish to NuGet Internal Feed
+        pool:
+          type: windows
+
+        variables:
+          ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: "Download build files from the powerbi-report-authoring-Official pipeline"
+          inputs:
+            buildType: 'specific'
+            project: '4c7b5adb-c2d0-4f18-b23c-edc4ac30f4e1' # Embedded
+            definition: '8490' # powerbi-report-authoring-Official
+            buildVersionToDownload: 'latest'
+            artifactName: 'drop'
+            targetPath: '$(Pipeline.Workspace)\PublishedNuGetArtifact'
+
+        - task: NuGetCommand@2
+          displayName: 'NuGet push Release package internal'
+          inputs:
+            command: 'push'
+            packagesToPush: '$(Pipeline.Workspace)\PublishedNuGetArtifact\outputs\package\Release\Microsoft.PowerBI.ReportAuthoring.*.nupkg'
+            nuGetFeedType: 'internal'
+            publishVstsFeed: 'd95dbb95-6687-4730-b306-abe69704b45d'
+
+    - stage: Prod_ApprovalToExternalPublish
+      displayName: Approval to external publish
+      trigger: manual
+      dependsOn: []
+      variables:
+        ob_release_environment: Production
+        ob_release_usedeploymentjob: true
+        ob_deploymentjob_environment: PBIEmbed
+
+      jobs:
+      - job: ApprovalToExternalPublish
+        displayName: Approval to publish the powerbi-report-authoring NuGet package to external
+        pool:
+          type: release
+
+        steps:
+        - download: PowerbiReportAuthoringOfficial
+
+    - stage: Release_External
+      displayName: Release NuGet external
+      dependsOn: Prod_ApprovalToExternalPublish
+      condition: succeeded()
+
+      jobs:
+      - job: PublishToNuGetExternal
+        displayName: Publish to NuGet External
+        pool:
+          name: Azure Pipelines
+          type: windows
+          isCustom: true
+          vmImage: 'windows-latest'
+
+        variables:
+          ob_outputDirectory: '$(OUTPUTROOT)' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: "Download build files from the powerbi-report-authoring-Official pipeline"
+          inputs:
+            buildType: 'specific'
+            project: '4c7b5adb-c2d0-4f18-b23c-edc4ac30f4e1' # Embedded
+            definition: '8490' # powerbi-report-authoring-Official
+            buildVersionToDownload: 'latest'
+            artifactName: 'drop'
+            targetPath: '$(Pipeline.Workspace)\PublishedNuGetArtifact'
+
+        - task: NuGetCommand@2
+          displayName: 'NuGet push Release package external'
+          inputs:
+            command: push
+            packagesToPush: '$(Pipeline.Workspace)\PublishedNuGetArtifact\outputs\package\Release\Microsoft.PowerBI.ReportAuthoring.*.nupkg'
+            nuGetFeedType: external
+            publishFeedCredentials: 'PBI Embedded Nuget Production 2017'
