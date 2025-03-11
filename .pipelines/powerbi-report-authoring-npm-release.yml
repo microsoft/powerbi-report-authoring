@@ -118,13 +118,13 @@ extends:
             artifactName: 'drop'
             targetPath: '$(Pipeline.Workspace)\PublishedNpmArtifact'
 
-        - task: EsrpRelease@8
+        - task: EsrpRelease@9
           inputs:
-            keyvaultname: 'Trident-ESRP'
-            authcertname: 'Fabric-ESRP-authentication'
-            signcertname: 'Fabric-ESRP-signing'
-            connectedservicename: 'Fabric ESRP-Embedded'
+            ConnectedServiceName: 'Fabric-ESRP-Secure-Embedded'
+            UseManagedIdentity: true
             clientid: 'f351681f-63af-4d0a-80b2-80bc2ec5cbb2'
+            keyvaultname: 'Fabric-ES-ESRP-PME'
+            signcertname: 'Fabric-ESRP-Signing-PME'
             intent: 'PackageDistribution'
             contentType: 'NPM'
             contentsource: 'Folder'
@@ -134,7 +134,7 @@ extends:
             approvers: 'alonyeshurun@microsoft.com'
             serviceendpointurl: 'https://api.esrp.microsoft.com'
             mainpublisher: 'ESRPRELPACMAN'
-            domaintenantid: '72f988bf-86f1-41af-91ab-2d7cd011db47'
+            domaintenantid: '975f013f-7f24-47e8-a7d3-abc4752bf346'
 
     - stage: Prod_ApprovalToAddLatestTag
       displayName: Approval to set the released package as latest
