@@ -65,8 +65,8 @@ gulp.task('clean:dist', function () {
 // Lints all TypeScript
 gulp.task('lint:ts', function () {
   return gulp.src(['./src/**/*.ts', './test/**/*.ts'])
-    .pipe(eslint()) // No formatter option here
-    .pipe(eslint.format('stylish')); // Pass formatter here
+    .pipe(eslint())
+    .pipe(eslint.format('stylish'));
 });
 
 // Keep this last. Order matters.

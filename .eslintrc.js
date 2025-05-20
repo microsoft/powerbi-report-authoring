@@ -181,6 +181,7 @@ module.exports = {
       "import/order": "off",
       "jsdoc/check-alignment": "warn",
       "jsdoc/check-indentation": "warn",
+      "jsdoc/newline-after-description": "off",
       "max-classes-per-file": "off",
       "max-len": "off",
       "new-parens": "warn",
@@ -197,7 +198,7 @@ module.exports = {
       "no-implied-eval": "off",
       "no-invalid-this": "off",
       "no-multiple-empty-lines": [
-        "error", 
+        "error",
         { "max": 1 }
       ],
       "no-new-wrappers": "warn",
