@@ -181,7 +181,6 @@ module.exports = {
       "import/order": "off",
       "jsdoc/check-alignment": "warn",
       "jsdoc/check-indentation": "warn",
-      "jsdoc/newline-after-description": "warn",
       "max-classes-per-file": "off",
       "max-len": "off",
       "new-parens": "warn",
