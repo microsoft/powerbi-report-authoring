@@ -7,7 +7,7 @@ var del = require('del'),
     header = require('gulp-header'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
-    eslint = require("gulp-eslint"),
+    eslint = require("gulp-eslint-new"),
     saveLicense = require('uglify-save-license')
     sourcemaps = require('gulp-sourcemaps'),
     webpack = require('webpack'),
@@ -65,10 +65,8 @@ gulp.task('clean:dist', function () {
 // Lints all TypeScript
 gulp.task('lint:ts', function () {
   return gulp.src(['./src/**/*.ts', './test/**/*.ts'])
-    .pipe(eslint({
-      formatter: "verbose"
-    }))
-    .pipe(eslint.format());
+    .pipe(eslint())
+    .pipe(eslint.format('stylish'));
 });
 
 // Keep this last. Order matters.
