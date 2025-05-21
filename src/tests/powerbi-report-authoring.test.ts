@@ -1,5 +1,5 @@
-import { extensions } from './extensions';
-import { startAuthoring } from './powerbi-report-authoring';
+import { extensions } from '../extensions';
+import { startAuthoring } from '../powerbi-report-authoring';
 
 describe('powerbi-report-authoring', () => {
   it('calls initialize on all extensions', () => {
