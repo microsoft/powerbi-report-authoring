@@ -16,9 +16,7 @@ describe('ReportExtensions', () => {
   });
 
   afterEach(() => {
-    if (spy) {
-      spy.mockRestore();
-    }
+     spy?.mockRestore();
   });
 
   it('should throw error if getVisualCapabilities is called without visualType', () => {
