@@ -27,7 +27,7 @@ describe('ReportExtensions', () => {
     }).toThrow('visualType parameter is missing');
   });
 
-  it('should call ReportExtensions.get with correct URL for getVisualCapabilities', async () => {
+  it('should call reportExtensions.get with correct URL for getVisualCapabilities', async () => {
     spy = jest.spyOn(ReportExtensions as any, 'get').mockResolvedValue({ capabilities: [] });
 
     await (Report.prototype as any).getVisualCapabilities.call(report,'barChart');
@@ -35,7 +35,7 @@ describe('ReportExtensions', () => {
     expect(spy).toHaveBeenCalledWith(report, '/report/visuals/types/barChart/capabilities');
   });
 
-  it('should call ReportExtensions.get with correct URL for getAvailableVisualTypes', async () => {
+  it('should call reportExtensions.get with correct URL for getAvailableVisualTypes', async () => {
     spy = jest.spyOn(ReportExtensions as any, 'get').mockResolvedValue(['barChart', 'lineChart']);
 
     await (Report.prototype as any).getAvailableVisualTypes.call(report);
