@@ -104,6 +104,25 @@ extends:
               workingDirectory: '$(Build.SourcesDirectory)'
 
           - task: PowerShell@2
+            displayName: 'Test'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Build.SourcesDirectory)\.pipelines\test.ps1'
+              workingDirectory: '$(Build.SourcesDirectory)'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFiles: '**/test-results.xml'
+              testRunTitle: 'Test Results'
+
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish Code Coverage Results'
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '$(Build.SourcesDirectory)\**\*coverage.xml'
+
+          - task: PowerShell@2
             displayName: 'Package'
             inputs:
               targetType: 'filePath'

@@ -7,5 +7,19 @@ module.exports = {
   ],
   transform: {
     '^.+\\.ts$': 'ts-jest',
-  }
+  },
+  collectCoverage: true,
+  coverageReporters: ['cobertura', 'text-summary'],
+  coverageDirectory: 'coverage',
+  reporters: [
+      'default',
+      [
+          'jest-junit',
+          {
+              suiteName: 'Powerbi client vue js tests',
+              outputDirectory: './test-results',
+              outputName: 'test-results.xml'
+          },
+      ],
+  ]
 }
