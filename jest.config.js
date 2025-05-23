@@ -16,7 +16,7 @@ module.exports = {
       [
           'jest-junit',
           {
-              suiteName: 'Powerbi client vue js tests',
+              suiteName: 'Powerbi report authoring tests',
               outputDirectory: './test-results',
               outputName: 'test-results.xml'
           },
