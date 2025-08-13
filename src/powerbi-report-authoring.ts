@@ -198,6 +198,15 @@ declare module 'visualDescriptor' {
      * ```
      */
     resetProperty(selector: IVisualPropertySelector): Promise<void>;
+
+    // TODO Add comment
+    getDataFieldName(dataRole: string, index: number): Promise<string>;
+
+    getFieldFormatString(dataRole: string, index: number): Promise<string>;
+
+    setFieldFormatString(dataRole: string, index: number, formatString: string): Promise<void>;
+
+    setFieldHidden(dataRole: string, index: number, isHidden: boolean): Promise<void>;
   }
 }
 
