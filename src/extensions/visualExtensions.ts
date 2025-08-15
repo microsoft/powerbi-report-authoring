@@ -157,12 +157,12 @@ export class VisualExtensions implements IPowerBIClientExtension {
       return VisualExtensions.get<string>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/formatString`);
     };
 
-    VisualDescriptor.prototype.setFieldFormatString = function(this: VisualDescriptor, dataRole: string, index: number, formatString: string): Promise<void> {
-      return VisualExtensions.put<void>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/formatString`, { formatString });
+    VisualDescriptor.prototype.setFieldFormatString = function(this: VisualDescriptor, dataRole: string, index: number, formatString: string): Promise<IError> {
+      return VisualExtensions.put<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/formatString`, { formatString });
     };
 
-    VisualDescriptor.prototype.setFieldHidden = function(this: VisualDescriptor, dataRole: string, index: number, isHidden: boolean): Promise<void> {
-      return VisualExtensions.put<void>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/hidden`, { isHidden });
+    VisualDescriptor.prototype.setFieldHidden = function(this: VisualDescriptor, dataRole: string, index: number, isHidden: boolean): Promise<IError> {
+      return VisualExtensions.put<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/hidden`, { isHidden });
     };
   }
 }

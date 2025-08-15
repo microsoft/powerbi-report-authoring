@@ -204,9 +204,9 @@ declare module 'visualDescriptor' {
 
     getFieldFormatString(dataRole: string, index: number): Promise<string>;
 
-    setFieldFormatString(dataRole: string, index: number, formatString: string): Promise<void>;
+    setFieldFormatString(dataRole: string, index: number, formatString: string): Promise<IError>;
 
-    setFieldHidden(dataRole: string, index: number, isHidden: boolean): Promise<void>;
+    setFieldHidden(dataRole: string, index: number, isHidden: boolean): Promise<IError>;
   }
 }
 
