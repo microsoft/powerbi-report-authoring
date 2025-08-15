@@ -114,7 +114,7 @@ declare module 'visualDescriptor' {
      * The visual type will not be changed if the visual contains visual calculations or hidden fields 
      * and the target visual type is incompatible with these features.
      *
-     * @param visualType - The new visual type to apply.
+     * @param visualType – a new visual type.
      */
     changeType(visualType: string): Promise<void>;
 
