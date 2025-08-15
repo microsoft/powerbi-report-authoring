@@ -109,6 +109,8 @@ declare module 'visualDescriptor' {
   interface VisualDescriptor {
     /**
      * Changes the visual type of an existing visual.
+     * It will not change the visual type if the visual has a visual calculation or hidden field and the target visual type
+     * is incompatible with visual calculations or hidden fields.
      *
      * @param visualType – a new visual type.
      */
