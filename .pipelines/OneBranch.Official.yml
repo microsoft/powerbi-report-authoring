@@ -69,7 +69,7 @@ extends:
           ob_sdl_binskim_break: true # https://aka.ms/obpipelines/sdl
           ob_artifactBaseName: 'drop'
           ob_sdl_cg_failOnAlert: false
-          ob_sdl_codeSignValidation_excludes: 'regex|.+(?:exe|dll)$;-|*.nd.dll;-|.gdn\\**'
+          ob_sdl_codeSignValidation_excludes: 'regex|.+(?:exe|dll)$;-|*.nd.dll;-|.gdn\\**;-|**\*.js'
 
         steps:
           # Custom Versioning - we will build the version using package.json in versioning commands.
@@ -167,15 +167,5 @@ extends:
               command: 'sign'
               signing_environment: 'azure-ado'
               signing_profile: 'external_distribution'
-              files_to_sign: |
-                **/*;
-                !**/*js;
-              search_root: '$(OUTPUTROOT)'
-
-          - task: onebranch.pipeline.signing@1
-            displayName: 'Sign JS files'
-            inputs:
-              command: 'sign'
-              cp_code: '143360005'
-              files_to_sign: '**/*.js'
+              files_to_sign: '**'
               search_root: '$(OUTPUTROOT)'
