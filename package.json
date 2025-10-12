@@ -57,7 +57,7 @@
   "dependencies": {
     "http-post-message": "^0.2",
     "powerbi-client": "^2.13",
-    "powerbi-models": "^1.4"
+    "powerbi-models": "^2.0.1"
   },
   "publishConfig": {
     "tag": "beta"
