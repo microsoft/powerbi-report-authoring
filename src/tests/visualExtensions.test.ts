@@ -121,4 +121,36 @@ describe('VisualExtensions', () => {
       value: {}
     });
   });
+
+  it('should call visualExtensions.get with correct URL for getDataFieldName', async () => {
+    spy = jest.spyOn(VisualExtensions as any, 'get').mockResolvedValue('FieldName');
+
+    await (VisualDescriptor.prototype).getDataFieldName.call(visual, 'Axis', 0);
+
+    expect(spy).toHaveBeenCalledWith(visual, '/report/pages/testPage/visuals/testVisual/dataroles/Axis/fields/0/dataFieldName');
+  });
+
+  it('should call visualExtensions.get with correct URL for getFieldFormatString', async () => {
+    spy = jest.spyOn(VisualExtensions as any, 'get').mockResolvedValue('#,##0.00');
+
+    await (VisualDescriptor.prototype).getFieldFormatString.call(visual, 'Values', 1);
+
+    expect(spy).toHaveBeenCalledWith(visual, '/report/pages/testPage/visuals/testVisual/dataroles/Values/fields/1/formatString');
+  });
+
+  it('should call visualExtensions.put with correct URL and body for setFieldFormatString', async () => {
+    spy = jest.spyOn(VisualExtensions as any, 'put').mockResolvedValue({} as IError);
+
+    await (VisualDescriptor.prototype).setFieldFormatString.call(visual, 'Values', 0, '#,##0');
+
+    expect(spy).toHaveBeenCalledWith(visual, '/report/pages/testPage/visuals/testVisual/dataroles/Values/fields/0/formatString', { formatString: '#,##0' });
+  });
+
+  it('should call visualExtensions.put with correct URL and body for setFieldHidden', async () => {
+    spy = jest.spyOn(VisualExtensions as any, 'put').mockResolvedValue({} as IError);
+
+    await (VisualDescriptor.prototype).setFieldHidden.call(visual, 'Legend', 2, true);
+
+    expect(spy).toHaveBeenCalledWith(visual, '/report/pages/testPage/visuals/testVisual/dataroles/Legend/fields/2/hidden', { isHidden: true });
+  });
 });

@@ -4,5 +4,5 @@
  * @hidden
  */
 export class Config {
-  public static readonly version: string = '2.0.0';
+  public static readonly version: string = '3.0.0';
 }

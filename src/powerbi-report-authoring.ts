@@ -109,6 +109,10 @@ declare module 'visualDescriptor' {
   interface VisualDescriptor {
     /**
      * Changes the visual type of an existing visual.
+     * 
+     * @remarks
+     * The visual type will not be changed if the visual contains visual calculations or hidden fields 
+     * and the target visual type is incompatible with these features.
      *
      * @param visualType – a new visual type.
      */
@@ -130,11 +134,11 @@ declare module 'visualDescriptor' {
     getDataFieldDisplayName(dataRole: string, index: number): Promise<string>;
 
     /**
-     * Sets the display name of a data role field.
+     * Sets the display name of a data role field. This will also set the DataFieldName which will be unique per visual.
      *
      * @param dataRole - the name of the target data role.
      * @param index - the index at which data field should be renamed.
-     * @param newDisplayName - the new display name for the data role field.
+     * @param newDisplayName - the new display name for the data role field. Will ensure that DataFieldName is unique
      */
     setDataFieldDisplayName(dataRole: string, index: number, newDisplayName: string): Promise<IError>;
 
@@ -142,7 +146,18 @@ declare module 'visualDescriptor' {
      * Adds a field to a data role.
      *
      * @param dataRole - the name of the target data role.
-     * @param dataField - the field to add to the data role. The field can be a column, column with aggregation, measure, hierarchy, or hierarchy with aggregation.
+     * @param dataField - the field to add to the data role. The field can be one of the following:
+     *     - column,
+     *     - column with aggregation,
+     *        - can be hidden
+     *     - measure,
+     *        - can be hidden
+     *     - hierarchy,
+     *     - hierarchy with aggregation,
+     *        - can be hidden
+     *     - visual calculation
+     *        - can be hidden
+     * hidden fields and visual calculations can be added if the visual can support visual calculation.
      * @param index - Optional. The index at which data field should be added. Default: the field is added last.
      */
     addDataField(dataRole: string, dataField: IBaseTarget, index?: number): Promise<IError>;
@@ -198,6 +213,48 @@ declare module 'visualDescriptor' {
      * ```
      */
     resetProperty(selector: IVisualPropertySelector): Promise<void>;
+
+    /**
+     * Gets the name of a data role field. This name is unique within the visual. 
+     * This is what should be used to reference a field in the DAX Expressions of Visual Calculations
+     *
+     * @param dataRole - the name of the target data role.
+     * @param index - the data field index.
+     */
+    getDataFieldName(dataRole: string, index: number): Promise<string>;
+
+    /**
+     * Gets the format string of a data role field.
+     * This format string is scoped at the visual level.
+     *
+     * @param dataRole - the name of the target data role.
+     * @param index - the data field index.
+     */
+    getFieldFormatString(dataRole: string, index: number): Promise<string>;
+
+    /**
+     * Sets the format string of a data role field. 
+     * This format string is scoped at the visual level.
+     *
+     * @param dataRole - the name of the target data role.
+     * @param index - the data field index.
+     * @param formatString - the format string.
+     */
+    setFieldFormatString(dataRole: string, index: number, formatString: string): Promise<IError>;
+
+    /**
+     * Sets whether a data role field is hidden or not.
+     * 
+     * @remarks
+     * - Only measures, aggregated fields, and visual calculations can be hidden.
+     * - You can only hide the fields if the visual supports visual calculation.
+     * - If unhiding a field causes an overflow within the dataRole, the system will try to hide another field within the dataRole.
+     *
+     * @param dataRole - the name of the target data role.
+     * @param index - the data field index.
+     * @param isHidden - whether the field should be hidden.
+     */
+    setFieldHidden(dataRole: string, index: number, isHidden: boolean): Promise<IError>;
   }
 }
 

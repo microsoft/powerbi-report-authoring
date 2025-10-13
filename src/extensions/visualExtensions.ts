@@ -148,5 +148,21 @@ export class VisualExtensions implements IPowerBIClientExtension {
     VisualDescriptor.prototype.resetProperty = function(this: VisualDescriptor, selector: IVisualPropertySelector): Promise<void> {
       return this.setProperty(selector, { schema: "http://powerbi.com/product/schema#default", value: {} as IDefaultProperty });
     };
+
+    VisualDescriptor.prototype.getDataFieldName = function(this: VisualDescriptor, dataRole: string, index: number): Promise<string> {
+      return VisualExtensions.get<string>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/dataFieldName`);
+    };
+
+    VisualDescriptor.prototype.getFieldFormatString = function(this: VisualDescriptor, dataRole: string, index: number): Promise<string> {
+      return VisualExtensions.get<string>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/formatString`);
+    };
+
+    VisualDescriptor.prototype.setFieldFormatString = function(this: VisualDescriptor, dataRole: string, index: number, formatString: string): Promise<IError> {
+      return VisualExtensions.put<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/formatString`, { formatString });
+    };
+
+    VisualDescriptor.prototype.setFieldHidden = function(this: VisualDescriptor, dataRole: string, index: number, isHidden: boolean): Promise<IError> {
+      return VisualExtensions.put<IError>(this, `/report/pages/${this.page.name}/visuals/${this.name}/dataroles/${dataRole}/fields/${index}/hidden`, { isHidden });
+    };
   }
 }
