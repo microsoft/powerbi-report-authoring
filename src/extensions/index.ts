@@ -11,7 +11,7 @@ import { VisualExtensions } from "./visualExtensions";
  * @hidden
  */
 export const extensions: IPowerBIClientExtension[] = [
-    new ReportExtensions(),
-    new PageExtensions(),
-    new VisualExtensions()
+  new ReportExtensions(),
+  new PageExtensions(),
+  new VisualExtensions()
 ];
