@@ -1,0 +1,8 @@
+schemaVersion: 0.0.1
+isProduction: true
+accountableOwners:
+  service: 3f49d90a-1233-4aab-bbc3-f97506c68132
+routing:
+  defaultAreaPath:
+    org: powerbi
+    path: Trident\ISV and ALM\Embedded

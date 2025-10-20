@@ -9,5 +9,5 @@ import { VisualDescriptor } from "powerbi-client";
  * @interface IVisualResponse
  */
 export interface IVisualResponse {
-    visual: VisualDescriptor;
+  visual: VisualDescriptor;
 }

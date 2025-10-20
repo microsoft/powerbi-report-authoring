@@ -3,3 +3,5 @@ dist
 package-lock.json
 *.tgz
 owners.txt
+.config
+.pipelines

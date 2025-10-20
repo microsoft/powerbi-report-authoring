@@ -4,5 +4,5 @@
  * @hidden
  */
 export interface IPowerBIClientExtension {
-    initialize();
+  initialize();
 }
